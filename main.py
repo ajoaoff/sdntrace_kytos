@@ -3,10 +3,10 @@
 An OpenFlow Path Trace
 """
 
-from kytos.core import KytosNApp, log
+from kytos.core import KytosNApp, log, rest
 from kytos.core.helpers import listen_to
 from pyof.foundation.network_types import Ethernet
-
+from flask import request
 from napps.amlight.sdntrace import settings
 from napps.amlight.sdntrace.shared.switches import Switches
 from napps.amlight.sdntrace.tracing.trace_manager import TraceManager
@@ -45,24 +45,13 @@ class Main(KytosNApp):
         # Instantiate TraceManager
         self.tracing = TraceManager(self.controller)
 
-        # Register REST methods
-        self.register_rest()
+    @rest('/trace', methods=['PUT'])
+    def rest_new_trace(self):
+        return self.tracing.rest_new_trace(request.get_json())
 
-    def register_rest(self):
-        """Register REST calls to be used.
-        PUT /sdntrace/trace returns a trace_id and
-            it is used to request a trace
-        GET /sdntrace/trace/<trace_id> is used to collect
-            results using the trace_id provided
-        """
-        endpoints = [('/sdntrace/trace',
-                      self.tracing.rest_new_trace,
-                      ['PUT']),
-                     ('/sdntrace/trace/<trace_id>',
-                      self.tracing.rest_get_result,
-                      ['GET'])]
-        for endpoint in endpoints:
-            self.controller.register_rest_endpoint(*endpoint)
+    @rest('/trace/<trace_id>')
+    def rest_get_result(self, trace_id):
+        return self.tracing.rest_get_result(trace_id)
 
     @listen_to('kytos/of_core.v0x01.messages.in.ofpt_packet_in')
     def handle_packet_in(self, event):

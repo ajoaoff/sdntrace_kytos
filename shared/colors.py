@@ -6,6 +6,7 @@
 import requests
 import json
 from kytos.core import log
+from napps.amlight.sdntrace import settings
 
 
 class Colors(object):
@@ -13,7 +14,7 @@ class Colors(object):
     def __init__(self):
         """ Instantiate Colors and get list of colors
         """
-        self._url = 'http://localhost:8181/kytos/coloring/colors'
+        self._url = settings.COLORS_URL
         self._colors = dict()
         self._get_colors()
 

@@ -7,7 +7,7 @@ import json
 from flask import request
 from _thread import start_new_thread as new_thread
 
-from kytos.core import log
+from kytos.core import log, rest
 from napps.amlight.sdntrace import settings, constants
 from napps.amlight.sdntrace.shared.switches import Switches
 from napps.amlight.sdntrace.shared.colors import Colors
@@ -237,14 +237,13 @@ class TraceManager(object):
 
     # REST calls
 
-    def rest_new_trace(self):
+    def rest_new_trace(self, entries):
         """Used for the REST PUT call
 
         Returns:
             Trace_ID in JSON format
         """
         result = dict()
-        entries = request.get_json()
         t_id = self.new_trace(entries)
         if t_id is not 0:
             result['result'] = {'trace_id': t_id}
