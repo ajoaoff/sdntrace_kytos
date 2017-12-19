@@ -167,9 +167,9 @@ class TracePath(object):
 
     def check_loop(self):
         """ Check if there are equal entries """
-        last = len(self.trace_result) - 1
-        for result in self.trace_result:
-            if result['dpid'] == self.trace_result[last]['dpid']:
-                if result['port'] == self.trace_result[last]['port']:
+        last = self.trace_result[-1]
+        for result in self.trace_result[:-1]:
+            if result['dpid'] == last['dpid']:
+                if result['port'] == last['port']:
                     return True
         return 0
