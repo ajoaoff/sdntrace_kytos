@@ -33,7 +33,7 @@ class TracePath(object):
     def __init__(self, trace_manager, r_id, initial_entries):
         """
         Args:
-            trace_manager: main TraceManager class - needed because Kytos.controller
+            trace_manager: main TraceManager class - needed for Kytos.controller
             r_id: request ID
             initial_entries: user entries for trace
         """
@@ -80,20 +80,24 @@ class TracePath(object):
                                  dpid=switch.dpid,
                                  port=entries['trace']['switch']['in_port'])
 
-        # A loop waiting for 'trace_ended'. It changes to True when reaches timeout
+        # A loop waiting for 'trace_ended'. It changes to True when reaches
+        # timeout
         while not self.trace_ended:
             in_port, probe_pkt = generate_trace_pkt(entries, color, self.id,
                                                     self.mydomain)
-            result, packet_in = self.send_trace_probe(switch, in_port, probe_pkt)
+            result, packet_in = self.send_trace_probe(switch, in_port,
+                                                      probe_pkt)
             if result == 'timeout':
                 self.rest.add_trace_step(self.trace_result, trace_type='last')
                 log.warning("Intra-Domain Trace Completed!")
                 self.trace_ended = True
             else:
                 self.rest.add_trace_step(self.trace_result, trace_type='trace',
-                                         dpid=result['dpid'], port=result['port'])
+                                         dpid=result['dpid'],
+                                         port=result['port'])
                 if self.check_loop():
-                    self.rest.add_trace_step(self.trace_result, trace_type='last',
+                    self.rest.add_trace_step(self.trace_result,
+                                             trace_type='last',
                                              reason='loop')
                     self.trace_ended = True
                     break
@@ -126,7 +130,6 @@ class TracePath(object):
 
         log.warning('Tracer: Sending POut to switch: %s and in_port %s '
                     % (switch.dpid, in_port))
-        # send_packet_out(self.trace_mgr.controller, switch, in_port, probe_pkt.data)
         send_packet_out(self.trace_mgr.controller, switch, in_port, probe_pkt)
 
         while True:
@@ -150,8 +153,10 @@ class TracePath(object):
                     return {'dpid': pIn[0], "port": pIn[1]}, pIn[4]
                 else:
                     log.warning('Sending PacketOut Again')
-                    # send_packet_out(self.trace_mgr.controller, switch, in_port, probe_pkt.data)
-                    send_packet_out(self.trace_mgr.controller, switch, in_port, probe_pkt)
+                    # send_packet_out(self.trace_mgr.controller, switch,
+                    # in_port, probe_pkt.data)
+                    send_packet_out(self.trace_mgr.controller,
+                                    switch, in_port, probe_pkt)
 
     def clear_trace_pkt_in(self):
         """ Once the probe PacketIn was processed, delete it from queue """
@@ -162,11 +167,9 @@ class TracePath(object):
 
     def check_loop(self):
         """ Check if there are equal entries """
-        i = 0
         last = len(self.trace_result) - 1
-        while i < last:
-            if self.trace_result[i]['dpid'] == self.trace_result[last]['dpid']:
-                if self.trace_result[i]['port'] == self.trace_result[last]['port']:
+        for result in self.trace_result:
+            if result['dpid'] == self.trace_result[last]['dpid']:
+                if result['port'] == self.trace_result[last]['port']:
                     return True
-            i += 1
         return 0

@@ -33,7 +33,8 @@ class TraceMsg(object):
 
     NOT_PROVIDED = 0
 
-    def __init__(self, r_id='0', r_domain='local', r_type='intra', r_time=0, r_path=0):
+    def __init__(self, r_id='0', r_domain='local', r_type='intra', r_time=0,
+                 r_path=0):
         self.log = logging
 
         self._request_id = None
@@ -130,7 +131,8 @@ class TraceMsg(object):
     def inter_path(self, r_inter_path):
         """
             Set the self.inter_path variable
-            if a list or a dict is provided, append to the end of the current list
+            if a list or a dict is provided, append to the end of the current 
+            list
             if nothing is provided, delete the current value
             Args:
                 r_inter_path: a list or a dict of paths
@@ -202,8 +204,11 @@ class TraceMsg(object):
         """
             A probe trace will be sent. Prepare payload
         """
-        self.inter_path = {self.local_domain: {'request_id': self.request_id,
-                                               'timestamp': self.get_timestamp(label='str')}}
+        self.inter_path = {
+            self.local_domain: {
+                'request_id': self.request_id,
+                'timestamp': self.get_timestamp(label='str')
+            }}
         self.type = 'inter'
 
 
@@ -257,7 +262,9 @@ class Path(object):
                     elif isinstance(list(domain.values())[0], dict):
                         return True
                 elif self.is_local_and_remote_equal(domain):
-                    self.log.warn('Error: local_domain and path can not be the same')
+                    self.log.warning(
+                        'Error: local_domain and path can not be the same'
+                    )
                     return False
                 else:
                     if isinstance(list(domain.values())[0], str):

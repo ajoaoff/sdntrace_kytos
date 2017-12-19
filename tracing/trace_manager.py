@@ -4,7 +4,7 @@
 import dill
 import time
 import json
-from flask import request
+from flask import jsonify
 from _thread import start_new_thread as new_thread
 
 from kytos.core import log, rest
@@ -249,7 +249,7 @@ class TraceManager(object):
             result['result'] = {'trace_id': t_id}
         else:
             result['result'] = {'Error': 'Invalid Switch'}
-        return json.dumps(result)
+        return jsonify(result)
 
     def rest_get_result(self, trace_id):
         """Usedf for the REST GET call
@@ -257,4 +257,4 @@ class TraceManager(object):
         Returns:
             get_result in JSON format
         """
-        return json.dumps(self.get_result(trace_id))
+        return jsonify(self.get_result(trace_id))

@@ -67,9 +67,14 @@ def generate_trace_pkt(entries, color, r_id, my_domain):
         dpid, in_port = prepare_switch(switch, dpid, in_port)
 
     if len(eth) > 0:
-        dl_src, dl_dst, dl_vlan, dl_type, dl_vlan_pcp = prepare_ethernet(eth, dl_src, dl_dst,
-                                                                         dl_vlan, dl_type,
-                                                                         dl_vlan_pcp)
+        dl_src, dl_dst, dl_vlan, dl_type, dl_vlan_pcp = prepare_ethernet(
+            eth,
+            dl_src,
+            dl_dst,
+            dl_vlan,
+            dl_type,
+            dl_vlan_pcp)
+
     # if len(ip) > 0:
     nw_src, nw_dst, nw_tos = prepare_ip(ip, nw_src, nw_dst, nw_tos)
 
@@ -128,7 +133,8 @@ def prepare_next_packet(entries, result, ev):
         in_port = ev.content['message'].match['in_port']
         entries['trace']['switch']['in_port'] = in_port
 
-    entries['trace']['eth']['dl_vlan'] = get_vlan_from_pkt(ev.content['message'].data.value)
+    entries['trace']['eth']['dl_vlan'] = get_vlan_from_pkt(
+        ev.content['message'].data.value)
 
     return entries, color, switch
 
